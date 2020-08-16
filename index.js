@@ -1,20 +1,21 @@
 document.addEventListener("DOMContentLoaded", function(){
   
-  const form = document.getElementById('item-form')
+  const itemForm = document.getElementById('item-form')
+  const searchForm = document.getElementById('search-form')
   const panel = document.getElementById('records-panel')
   const recordList = JSON.parse(localStorage.getItem('records')) || []
 
   showRecords(recordList);
 
-  form.addEventListener('submit', function(e){
+  itemForm.addEventListener('submit', function(e){
     e.preventDefault();
 
     let formData =  {
                       'uuid': generateUUID(),
-                      'date': form.date.value,
-                      'category': form.category.value,
-                      'description': form.description.value,
-                      'amount': parseInt(form.amount.value)
+                      'date': itemForm.date.value,
+                      'category': itemForm.category.value,
+                      'description': itemForm.description.value,
+                      'amount': parseInt(itemForm.amount.value)
                     }
 
     recordList.push(formData);
@@ -23,28 +24,52 @@ document.addEventListener("DOMContentLoaded", function(){
     showRecords(recordList);
   })
 
+  searchForm.addEventListener('submit', function(e){
+    e.preventDefault();
 
+    let category = searchForm.category.value
+    let month = searchForm.month.value
+    let allRecords = JSON.parse(localStorage.getItem('records'))   
+    
+    function categoryHandler(records) {
+      if (category === '') {
+        return records
+      } else {
+        return records.filter((record)=>{return record['category'] === category})
+      }
+    }
+
+    function monthHandler(records) {
+      if (month === '') {
+        return records
+      } else {
+        return records.filter((record)=>{return record['date'].substr(0, 7) === month})
+      }
+    }
+
+    showRecords(monthHandler(categoryHandler(allRecords)))
+  })
 
   function showRecords(data){
-    panel.innerHTML = ''
+    panel.innerHTML = '';
     data.reverse().map((el)=>{
       panel.innerHTML += recordsHTML(el)
     });
-    const removeBtns = document.querySelectorAll('.remove')
 
-    removeBtns.forEach((el)=>{el.addEventListener('click', removeHandler)})
+    const removeBtns = document.querySelectorAll('.remove');
+    removeBtns.forEach((el)=>{el.addEventListener('click', removeHandler)});
   }
 
   function removeHandler(evt){
-    let remove = recordList.find((record)=>{ return record['uuid'] === evt.target.dataset.id})
+    let remove = recordList.find((record)=>{ return record['uuid'] === evt.target.dataset.id});
 
-    recordList.splice(recordList.indexOf(remove), 1)
+    recordList.splice(recordList.indexOf(remove), 1);
     updateRecords();
     showRecords(recordList);
   }
 
   function updateRecords() {
-    localStorage.setItem('records',JSON.stringify(recordList))
+    localStorage.setItem('records',JSON.stringify(recordList));
   }
 
   function recordsHTML(data) {
@@ -56,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function(){
             <td>${data.amount}</td>
             <td><span class="remove" data-id=${data.uuid}>x</span></td>
             </tr>
-           `
+           `;
   }
 
   function generateUUID() {
