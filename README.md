@@ -128,6 +128,7 @@ function generateUUID() {
 
 目標: 發布成果到 GitHub Page 上
 - [ ] 把這個發佈到 GitHub Page 上，你就有一個很鳥的(假)雲端記帳系統
+- [ ] https://itsboyu.github.io/js_5_workshop_wallet/
 
 ### 其他挑戰
 
